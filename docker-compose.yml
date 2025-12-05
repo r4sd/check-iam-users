@@ -1,0 +1,35 @@
+services:
+  # テスト実行
+  test:
+    build: .
+    command: pytest -v
+    volumes:
+      - .:/app
+
+  # リンター
+  lint:
+    build: .
+    command: ruff check .
+    volumes:
+      - .:/app
+
+  # フォーマットチェック
+  format:
+    build: .
+    command: ruff format --check .
+    volumes:
+      - .:/app
+
+  # フォーマット適用（修正）
+  format-fix:
+    build: .
+    command: ruff format .
+    volumes:
+      - .:/app
+
+  # 全チェック（CI相当）
+  ci:
+    build: .
+    command: sh -c "ruff check . && ruff format --check . && pytest -v"
+    volumes:
+      - .:/app
