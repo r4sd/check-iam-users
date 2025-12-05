@@ -21,7 +21,7 @@ MISSING_FILE = "iam_users_missing.txt"
 def get_iam_users(profile: str | None = None) -> set[str]:
     """AWS から IAM ユーザーを全件取得する（ページネーション対応）"""
     session = boto3.Session(profile_name=profile)
-    iam = session.client("iam")
+    iam = session.client("iam", region_name="us-east-1")
 
     users = set()
     paginator = iam.get_paginator("list_users")
@@ -37,20 +37,20 @@ def load_baseline() -> set[str]:
     if not os.path.exists(BASELINE_FILE):
         return set()
 
-    with open(BASELINE_FILE) as f:
+    with open(BASELINE_FILE, encoding="utf-8") as f:
         return {line.strip() for line in f if line.strip()}
 
 
 def save_baseline(users: set[str]) -> None:
     """ユーザーをベースラインファイルに保存する"""
-    with open(BASELINE_FILE, "w") as f:
+    with open(BASELINE_FILE, "w", encoding="utf-8") as f:
         for user in sorted(users):
             f.write(user + "\n")
 
 
 def save_diff(filename: str, users: set[str]) -> None:
     """差分結果をファイルに保存する"""
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         for user in sorted(users):
             f.write(user + "\n")
 
